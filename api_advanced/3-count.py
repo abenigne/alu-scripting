@@ -2,7 +2,26 @@
 """Recursively count keywords in the titles of a subreddit's hot posts."""
 import requests
 
-USER_AGENT = "linux:alu.api_advanced:v1.0.0 (by /u/alu_student)"
+HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "
+                         "AppleWebKit/537.36 (KHTML, like Gecko) "
+                         "Chrome/120.0 Safari/537.36"}
+URLS = ["https://api.reddit.com/r/{}/{}",
+        "https://www.reddit.com/r/{}/{}.json",
+        "https://old.reddit.com/r/{}/{}.json"]
+
+
+def fetch(subreddit, page, params=None):
+    """Return the JSON of a subreddit page, or None on any failure."""
+    for template in URLS:
+        try:
+            res = requests.get(template.format(subreddit, page),
+                               headers=HEADERS, params=params,
+                               allow_redirects=False, timeout=10)
+            if res.status_code == 200:
+                return res.json()
+        except (requests.RequestException, ValueError):
+            continue
+    return None
 
 
 def print_counts(counts, word_list):
@@ -26,20 +45,14 @@ def count_words(subreddit, word_list, after=None, counts=None):
         counts = {}
     if not isinstance(subreddit, str) or not word_list:
         return
-    url = "https://api.reddit.com/r/{}/hot".format(subreddit)
     params = {"limit": 100}
     if after:
         params["after"] = after
-    response = requests.get(url, headers={"User-Agent": USER_AGENT},
-                            params=params, allow_redirects=False)
-    if response.status_code != 200:
+    result = fetch(subreddit, "hot", params)
+    if not result:
         print_counts(counts, word_list)
         return
-    try:
-        data = response.json().get("data", {})
-    except ValueError:
-        print_counts(counts, word_list)
-        return
+    data = result.get("data", {})
     wanted = set(word.lower() for word in word_list)
     for child in data.get("children", []):
         title = child.get("data", {}).get("title") or ""
