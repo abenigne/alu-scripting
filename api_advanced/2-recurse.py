@@ -11,7 +11,7 @@ def recurse(subreddit, hot_list=None, after=None):
         hot_list = []
     if not isinstance(subreddit, str):
         return None
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    url = "https://api.reddit.com/r/{}/hot".format(subreddit)
     params = {"limit": 100}
     if after:
         params["after"] = after

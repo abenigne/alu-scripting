@@ -9,7 +9,7 @@ def number_of_subscribers(subreddit):
     """Return the subscriber count of a subreddit, or 0 if it is invalid."""
     if not isinstance(subreddit, str):
         return 0
-    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
+    url = "https://api.reddit.com/r/{}/about".format(subreddit)
     response = requests.get(url, headers={"User-Agent": USER_AGENT},
                             allow_redirects=False)
     if response.status_code != 200:

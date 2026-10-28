@@ -26,7 +26,7 @@ def count_words(subreddit, word_list, after=None, counts=None):
         counts = {}
     if not isinstance(subreddit, str) or not word_list:
         return
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    url = "https://api.reddit.com/r/{}/hot".format(subreddit)
     params = {"limit": 100}
     if after:
         params["after"] = after

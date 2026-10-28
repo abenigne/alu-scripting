@@ -10,7 +10,7 @@ def top_ten(subreddit):
     if not isinstance(subreddit, str):
         print(None)
         return
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    url = "https://api.reddit.com/r/{}/hot".format(subreddit)
     response = requests.get(url, headers={"User-Agent": USER_AGENT},
                             params={"limit": 10}, allow_redirects=False)
     if response.status_code != 200:
